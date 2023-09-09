@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Inventory</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>Product Inventory</h1>
+    <table>
+        <tr>
+            <th>Product Name</th>
+            <th>Stock On Hand</th>
+        </tr>
+        {% for product in page_obj %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.stock_on_hand }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    <div class="pagination">
+            <span class="step-links">
+            {% if is_paginated %}
+                {% if page_obj.has_previous %}
+                  <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                  <a class="btn btn-outline-info mb-4" href="?page={{ products.previous_page_number }}">Previous</a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                      <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                      <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                  <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                  <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                {% endif %}
+            {% endif %}
+            </span>
+        </div>
+    <form method="post" action="{% url 'generate_products' %}">
+        {% csrf_token %}
+        <button type="submit">Generate Products</button>
+    </form>
+    <form method="post" action="{% url 'sort_asc' %}">
+        {% csrf_token %}
+        <button type="submit">Sort Ascending</button>
+        <table>
+        <tr>
+            <th>Product Name</th>
+            <th>Stock On Hand</th>
+        </tr>
+        {% for product in page_obj %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.stock_on_hand }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    </form>
+    <form method="post" action="{% url 'sort_desc' %}">
+        {% csrf_token %}
+        <button type="submit">Sort Descending</button>
+    </form>
+    <form method="post" action="{% url 'reduce_stock' %}">
+        {% csrf_token %}
+        <button type="submit">Reduce Stock</button>
+    </form>
+    <form method="post" action="{% url 'update_even_stock' %}">
+        {% csrf_token %}
+        <button type="submit">Increase Stock (Even Numbers)</button>
+    </form>
+
+</body>
+</html>
+
+
